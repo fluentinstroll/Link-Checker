@@ -9,6 +9,7 @@ add logic for testing urls */
 
 const options = yargs
  .usage("Usage: -n <name>")
+ .alias('version', 'v') //user can enter -v or --version
  //.option("*.t", { alias: "name", describe: "Your name", type: "string", demandOption: true })
  .argv;
 
