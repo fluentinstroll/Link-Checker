@@ -16,6 +16,6 @@ const options = yargs
  //.option("*.t", { alias: "name", describe: "Your name", type: "string", demandOption: true })
  .argv;
 
-const greeting = `Hello, ${options.name}!`;
+const greeting = `Hello, ${commmand}!`;
 
 console.log(greeting);
