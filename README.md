@@ -10,7 +10,7 @@ Features included:
 - supports both --version and -v command line args
 
 Libraries used by this script:
-yargs: https://github.com/yargs/yargs
-get-urls: https://github.com/sindresorhus/get-urls
-chalk: https://github.com/chalk/chalk
-request: https://github.com/request/request
+- yargs: https://github.com/yargs/yargs
+- get-urls: https://github.com/sindresorhus/get-urls
+- chalk: https://github.com/chalk/chalk
+- request: https://github.com/request/request

@@ -69,7 +69,7 @@ const isValid = (url) => {
             timeout: 1500
         }, function (_, res) {
             if (!res) {
-                console.log(chalk.gray(`[ETIMEOUT] ${url}`));
+                console.log(chalk.gray(`[TIMEOUT] ${url}`));
                 return resolve();
             }
 
