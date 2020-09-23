@@ -2,7 +2,8 @@
 An app to let people check URLs and find out if they actually work!
 
 To use:
-- simply navigate to the bin folder and write node index.js <filename>
+- cd Link-Checker/bin
+- node index.js <path-to-filename>
 
 Features included:
 - colourizing output. Good URLs should be printed in green, bad URLs in red, and unknown URLs in gray 
