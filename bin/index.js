@@ -20,6 +20,8 @@ DONE:
 - tests each line
 - display error codes and colours 
 
+TODO:
+- make the script show the name when showing the version
 
 ERRORS:
 - MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 pipe listeners added to [Request]. Use emitter.setMaxListeners() to increase limit.
@@ -35,10 +37,11 @@ const options = yargs
     .alias('version', 'v') //user can enter -v or --version
     .argv;
 
-if (argv[2] == '-v' || argv[2] == '--version') {
+
+/*if (argv[2] == '-v' || argv[2] == '--version') {
     console.log("Link Checker v0.1");
     exit;
-}
+}*/
 
 fs.readFile(`${argv[2]}`, (err, data) => {
     if (err) throw err;
