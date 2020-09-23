@@ -58,28 +58,28 @@ const separateLinks = (data) => {
 }
 
 async function validateLinks(data) {
-    for await (const url of data) {
-        isValid(url)
+    for await (const link of data) {
+        isValid(link)
     }
 }
 
-const isValid = (url) => {
+const isValid = (link) => {
     return new Promise((resolve) => {
-        req.head(url, {
+        req.head(link, {
             timeout: 1500
         }, function (_, res) {
             if (!res) {
-                console.log(chalk.gray(`[TIMEOUT] ${url}`));
+                console.log(chalk.gray(`[TIMEOUT] ${link}`));
                 return resolve();
             }
 
             const status = res.statusCode;
             if (status === 200) {
-                console.log(chalk.green(`[200] GOOD ${url}`));
+                console.log(chalk.green(`[200] GOOD ${link}`));
             } else if (status === 400 || status === 404) {
-                console.log(chalk.red(`[${status}] BAD ${url}`));
+                console.log(chalk.red(`[${status}] BAD ${link}`));
             } else {
-                console.log(chalk.gray(`[${status}] UNKNOWN ${url}`));
+                console.log(chalk.gray(`[${status}] UNKNOWN ${link}`));
             }
 
             resolve();
