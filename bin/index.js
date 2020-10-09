@@ -50,6 +50,7 @@ fs.readFile(`${argv[2]}`, (err, data) => {
     let linklist = generateLinkList(data);
     linklist = Array.from(linklist);
     validateLinks(linklist);
+
 })}
 else {
     console.log("Please enter an option, use --help to see usage.")
@@ -65,13 +66,17 @@ const separateLinks = (data) => {
     return list;
 }
 
-async function validateLinks(data) {
-    for await (const link of data) {
+function validateLinks(data) {
+
+    for (const link of data) {
         isValid(link)
     }
+    
 }
 
 const isValid = (link) => {
+    
+
     return new Promise((resolve) => {
         req.head(link, {
             timeout: 1500
@@ -79,6 +84,7 @@ const isValid = (link) => {
             if (!res) {
                 if (argv.a){
                 console.log(chalk.gray(`[TIMEOUT] ${link}`));
+                process.exitCode = 2;
                 }
                 return resolve();
             }
@@ -91,13 +97,23 @@ const isValid = (link) => {
             } else if (status === 400 || status === 404) {
                 if (options.b || options.a) {
                 console.log(chalk.red(`[${status}] BAD ${link}`));
+                if (process.exitCode === 0) {
+                    process.exitCode++;
+                }
             }
         } else {
             if (options.a){
                 console.log(chalk.gray(`[${status}] UNKNOWN ${link}`));
+                process.exitCode = 2;
             }}
 
             resolve();
+
+            
         }); 
+        
+        
     })
+
+    
 }
