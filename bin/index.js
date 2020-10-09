@@ -35,8 +35,6 @@ const options = yargs
     .usage("Usage $0: enter filename after command, with ")
     .demandCommand(1)
     .alias('version', 'v') //user can enter -v or --version
-    .alias('a', 'all')
-    .describe('a', 'Show all links in a file, whether good or bad.')
     .alias('g', 'good')
     .describe('g', 'Show only good links in a file.')
     .alias('b', 'bad')
@@ -44,16 +42,13 @@ const options = yargs
     .argv;
 
 
-if(options.a || options.b || options.g){
-fs.readFile(`${argv[2]}`, (err, data) => {
-    if (err) throw err;
-    let linklist = generateLinkList(data);
-    linklist = Array.from(linklist);
-    validateLinks(linklist);
-})}
-else {
-    console.log("Please enter an option, use --help to see usage.")
-}
+
+    fs.readFile(`${argv[2]}`, (err, data) => {
+        if (err) throw err;
+        let linklist = generateLinkList(data);
+        linklist = Array.from(linklist);
+        validateLinks(linklist);
+    })
 
 const generateLinkList = (data) => {
     let linklist = separateLinks(data);
@@ -72,32 +67,35 @@ async function validateLinks(data) {
 }
 
 const isValid = (link) => {
+
     return new Promise((resolve) => {
         req.head(link, {
             timeout: 1500
         }, function (_, res) {
             if (!res) {
-                if (argv.a){
-                console.log(chalk.gray(`[TIMEOUT] ${link}`));
+                if (!options.b && !options.g) {
+                    console.log(chalk.gray(`[TIMEOUT] ${link}`));
                 }
                 return resolve();
             }
 
             const status = res.statusCode;
             if (status === 200) {
-                if (options.g || options.a) {
-                console.log(chalk.green(`[200] GOOD ${link}`));
+                if (!options.b) {
+                    console.log(chalk.green(`[200] GOOD ${link}`));
                 }
             } else if (status === 400 || status === 404) {
-                if (options.b || options.a) {
-                console.log(chalk.red(`[${status}] BAD ${link}`));
+                if (!options.g) {
+                    console.log(chalk.red(`[${status}] BAD ${link}`));
+                }
+            } else {
+                if (!options.b && !options.g) {
+                    console.log(chalk.gray(`[${status}] UNKNOWN ${link}`));
+                }
             }
-        } else {
-            if (options.a){
-                console.log(chalk.gray(`[${status}] UNKNOWN ${link}`));
-            }}
 
             resolve();
-        }); 
+        });
     })
+
 }
