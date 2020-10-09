@@ -60,13 +60,16 @@ const separateLinks = (data) => {
     return list;
 }
 
-async function validateLinks(data) {
-    for await (const link of data) {
+function validateLinks(data) {
+
+    for (const link of data) {
         isValid(link)
     }
+    
 }
 
 const isValid = (link) => {
+    
 
     return new Promise((resolve) => {
         req.head(link, {
