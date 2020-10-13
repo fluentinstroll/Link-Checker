@@ -26,12 +26,18 @@ const options = yargs
 
 
 fs.readFile(`${argv[2]}`, (err, data) => {
-    if (err) throw err;
+    try {
     let linklist = generateLinkList(data);
     linklist = Array.from(linklist);
-
+}
+catch (err) {
+    console.log("The app has recieved a wrong filename.")
+    console.log("Please enter a correct filename.")
+    exit(1);
+}
     validateLinks(linklist)
 })
+
 
 const generateLinkList = (data) => {
     let linklist = separateLinks(data);
@@ -53,7 +59,6 @@ const validateLinks = async (data) => {
 
 const isValid = (link) => {
 
-
     return new Promise((resolve) => {
         req.head(link, {
             timeout: 1500
@@ -63,7 +68,7 @@ const isValid = (link) => {
                     console.log(chalk.gray(`[TIMEOUT] ${link}`));
                     process.exitCode = 2;
                 }
-                return resolve(process.exitCode);
+                return resolve();
             }
 
             const status = res.statusCode;
@@ -87,7 +92,7 @@ const isValid = (link) => {
                 }
             }
 
-            resolve(process.exitCode);
+            resolve();
         });
     })
 
