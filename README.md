@@ -1,5 +1,5 @@
 # Link-Checker
-## An app to let people check URLs and find out if they actually work!
+### An app to let people check URLs and find out if they actually work!
 
 ### This app uses node, therefore you need to have the latest version of node installed on your computer.
 
