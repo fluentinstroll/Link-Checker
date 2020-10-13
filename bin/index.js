@@ -11,28 +11,10 @@ const getUrls = require('get-urls');
 const req = require('request');
 require('events').EventEmitter.defaultMaxListeners = 11;
 
-/*
-DONE:
-- script now can get text from file and display it
-- user must add an argument
-- script makes sure the file exists (kinda)
-- user can enter --version or -v
-- tests each line
-- display error codes and colours 
-
-TODO:
-- make the script show the name when showing the version
-
-ERRORS:
-- MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 pipe listeners added to [Request]. Use emitter.setMaxListeners() to increase limit.
-    -- tried to fix by setting defaultMaxListeners to 11 since according to the request dev this is a problem with website redirects but COULD be memory leak
-- seemingly randomly the app spits out incorrect status codes even though the site works
-*/
-
 req.maxRedirects = 11;
 
 const options = yargs
-    .usage("Usage $0: enter filename after command, with ")
+    .usage("Usage $0: enter filename after command, with a proper argument.")
     .demandCommand(1)
     .alias('version', 'v') //user can enter -v or --version
     .alias('g', 'good')
@@ -47,7 +29,8 @@ fs.readFile(`${argv[2]}`, (err, data) => {
     if (err) throw err;
     let linklist = generateLinkList(data);
     linklist = Array.from(linklist);
-    validateLinks(linklist);
+
+    validateLinks(linklist)
 })
 
 const generateLinkList = (data) => {
@@ -60,11 +43,12 @@ const separateLinks = (data) => {
     return list;
 }
 
-function validateLinks(data) {
+const validateLinks = async (data) => {
     for (const link of data) {
-        isValid(link)
+        await isValid(link)
     }
-
+    console.log("=========================");
+    console.log("Exiting with exit code: " + process.exitCode);
 }
 
 const isValid = (link) => {
@@ -79,20 +63,22 @@ const isValid = (link) => {
                     console.log(chalk.gray(`[TIMEOUT] ${link}`));
                     process.exitCode = 2;
                 }
-                return resolve();
+                return resolve(process.exitCode);
             }
 
             const status = res.statusCode;
             if (status === 200) {
                 if (!options.b) {
                     console.log(chalk.green(`[200] GOOD ${link}`));
+                    if (process.exitCode != 1 && process.exitCode != 2){
+                        process.exitCode = 0;
+                    }
                 }
             } else if (status === 400 || status === 404) {
                 if (!options.g) {
                     console.log(chalk.red(`[${status}] BAD ${link}`));
-                    if (process.exitCode = 0) {
-                        process.exitCode++;
-                    }
+                    if (process.exitCode != 2)
+                        process.exitCode = 1;
                 }
             } else {
                 if (!options.b && !options.g) {
@@ -101,7 +87,7 @@ const isValid = (link) => {
                 }
             }
 
-            resolve();
+            resolve(process.exitCode);
         });
     })
 
