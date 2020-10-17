@@ -1,0 +1,18 @@
+## should not be ignored
+# http://www.reddit.com
+# www.ebay.com
+# Some text
+# http://www.google.fr
+# http://www.t.co
+# http://www.tmall.com
+# http://www.google.com.br
+## Shoud be invalid
+www.360.cn
+www.youtube.com
+www.facebook.com
+www.baidu.com
+www.yahoo.com
+www.amazon.com
+## should be ignored
+http://www.wikipedia.org
+http://www.qq.com
