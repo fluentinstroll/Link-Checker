@@ -43,8 +43,12 @@ if (options.i) {
             const rl = createInterface({
                 input: createReadStream(`${argv[4]}`),
                 crlfDelay: Infinity
-            });
-
+            })
+            /* 
+            trying to add error handling for when the file doesn't exist, but it seems because it's asyncronous, 
+            we cannot actually do it because the error will always be reported on the system level before we can catch it
+            thinking of a way to fix this including making this function syncronous
+            */
             rl.on('line', (line) => {
                 if (line[0] !== '#') {
                     if (line[0] === 'h') {
@@ -57,7 +61,7 @@ if (options.i) {
 
             await once(rl, 'close');
 
-        } catch (err) {
+        } catch(err) {
             console.log('Please check if you typed the options in a correct order');
         }
     })();
