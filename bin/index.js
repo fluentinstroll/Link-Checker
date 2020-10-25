@@ -19,7 +19,6 @@ const {
 const getUrls = require('get-urls');
 const req = require('request');
 require('events').EventEmitter.defaultMaxListeners = 11;
-
 req.maxRedirects = 11;
 
 var iFileArr = []; // an array for storing each line of the ignore file -Joy3van
@@ -68,44 +67,41 @@ if (options.i) {
 
 }
 
-fs.readFile(`${argv[2]}`, (err, data) => {
+fs.readFile(`${argv[2]}`, (err, fileContents) => {
     try {
-        var linklist = generateLinkList(data); // Changed let to var because otherwise linklist variable would become undefined outside the try block -Joy3van
-        linklist = Array.from(linklist);
+        var linkList = generateLinkList(fileContents); // Changed let to var because otherwise linklist variable would become undefined outside the try block -Joy3van
+        linkList = Array.from(linkList);
     } catch (err) {
         console.log("The app has recieved a wrong filename.")
         console.log("Please enter a correct filename.")
         exit(1);
     }
-    validateLinks(linklist)
+    validateLinks(linkList)
 })
 
 
 
-const generateLinkList = (data) => {
-    let linklist = separateLinks(data);
-    return linklist;
-}
-
-const separateLinks = (data) => {
+const generateLinkList = (fileContents) => {
     let list;
     if (options.i) {
-        list = getUrls(data.toString(), {
+        list = getUrls(fileContents.toString(), {
             stripWWW: false,
             exclude: iFileArr
         }); // Set exclude option and exclude whatever link had been put in iFileArr. - Joy3van
     } else {
-        list = getUrls(data.toString(), {
+        list = getUrls(fileContents.toString(), {
             stripWWW: false
         }); // Set the stripWWW option to false so it would get correct links(default is true) -Joy3van
     }
     return list;
 }
 
-const validateLinks = async (data) => {
-    for (const link of data) {
+const validateLinks = async (links) => {
+    
+    for (const link of links) {
         await isValid(link)
     }
+
     console.log("=========================");
     console.log("Exiting with exit code: " + process.exitCode);
 }
@@ -125,28 +121,33 @@ const isValid = (link) => {
             }
 
             const status = res.statusCode;
-            if (status === 200) {
-                if (!options.b) {
-                    console.log(chalk.green(`[200] GOOD ${link}`));
-                    if (process.exitCode != 1 && process.exitCode != 2) {
-                        process.exitCode = 0;
-                    }
-                }
-            } else if (status === 400 || status === 404) {
-                if (!options.g) {
-                    console.log(chalk.red(`[${status}] BAD ${link}`));
-                    if (process.exitCode != 2)
-                        process.exitCode = 1;
-                }
-            } else {
-                if (!options.b && !options.g) {
-                    console.log(chalk.gray(`[${status}] UNKNOWN ${link}`));
-                    process.exitCode = 2;
-                }
-            }
+            
+            displayStatusCode(status, link);
 
             resolve();
         });
     })
 
+}
+
+const displayStatusCode = (code, link) => {
+    if (code === 200) {
+        if (!options.b) {
+            console.log(chalk.green(`[200] GOOD ${link}`));
+            if (process.exitCode != 1 && process.exitCode != 2) {
+                process.exitCode = 0;
+            }
+        }
+    } else if (code === 400 || code === 404) {
+        if (!options.g) {
+            console.log(chalk.red(`[${code}] BAD ${link}`));
+            if (process.exitCode != 2)
+                process.exitCode = 1;
+        }
+    } else {
+        if (!options.b && !options.g) {
+            console.log(chalk.gray(`[${code}] UNKNOWN ${link}`));
+            process.exitCode = 2;
+        }
+    }
 }
