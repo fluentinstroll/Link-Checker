@@ -7,7 +7,8 @@ const {
     once
 } = require('events');
 const {
-    createReadStream
+    createReadStream,
+    createWriteStream
 } = require('fs');
 const {
     createInterface
@@ -21,11 +22,11 @@ const req = require('request');
 require('events').EventEmitter.defaultMaxListeners = 11;
 req.maxRedirects = 11;
 
+var filename;
 var iFileArr = []; // an array for storing each line of the ignore file -Joy3van
 
 const options = yargs
     .usage("Usage $0: enter filename after command, with a proper argument.")
-    .demandCommand(1)
     .alias('version', 'v') //user can enter -v or --version
     .alias('g', 'good')
     .describe('g', 'Show only good links in a file.')
@@ -33,7 +34,37 @@ const options = yargs
     .describe('b', 'Show only bad links in a file')
     .alias('i', 'ignore')
     .describe('i', 'Ignore links provided in another file, the path of ignore file should be after argument')
+    .alias('t', 'telescope')
+    .describe('t', 'Read links connected to a local telescope server')
     .argv;
+
+if (options.t) {
+
+
+    var url = 'http://localhost:3000/posts/';
+
+    req.get({
+        url: url,
+        json: true,
+        headers: {
+            'User-Agent': 'request'
+        }
+    }, (err, res, data) => {
+        if (err) {
+            console.log('Error:', err);
+        } else if (res.statusCode !== 200) {
+            console.log('localhost did not respond... check to see if your local telescope session is up...');
+        } else {
+            const urls = data.map(e => url + e.id)
+            
+            fs.writeFile('files/telescope.txt', JSON.stringify(urls), function (err) {
+                if (err) throw err;
+              }); 
+        }
+    });
+    //send file to be read
+
+}
 
 // Process the ignore file -Joy3van
 if (options.i) {
@@ -67,7 +98,14 @@ if (options.i) {
 
 }
 
-fs.readFile(`${argv[2]}`, (err, fileContents) => {
+
+if(options.t){
+    filename = 'files/telescope.txt'
+}
+else {
+        filename = `${argv[2]}`;
+}
+fs.readFile(filename, (err, fileContents) => {
     try {
         var linkList = generateLinkList(fileContents); // Changed let to var because otherwise linklist variable would become undefined outside the try block -Joy3van
         linkList = Array.from(linkList);
@@ -97,11 +135,10 @@ const generateLinkList = (fileContents) => {
 }
 
 const validateLinks = async (links) => {
-    
+
     for (const link of links) {
         await isValid(link)
     }
-
     console.log("=========================");
     console.log("Exiting with exit code: " + process.exitCode);
 }
@@ -121,7 +158,7 @@ const isValid = (link) => {
             }
 
             const status = res.statusCode;
-            
+
             displayStatusCode(status, link);
 
             resolve();
