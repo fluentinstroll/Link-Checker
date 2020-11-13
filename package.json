@@ -4,7 +4,8 @@
   "description": "",
   "main": "bin/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier-watch": "onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,10 @@
     "get-urls": "^10.0.0",
     "index.js": "0.0.3",
     "linkchecker": "^1.1.0",
+    "node-fetch": "^2.6.1",
     "yargs": "^13.3.2"
+  },
+  "devDependencies": {
+    "prettier": "2.1.2"
   }
 }
