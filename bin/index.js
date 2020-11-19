@@ -182,3 +182,7 @@ const displayStatusCode = (code, link) => {
         }
     }
 }
+
+module.exports = {
+    displayStatusCode,
+}
