@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk')
 const yargs = require('yargs')
 const fs = require('fs')
 const { once } = require('events')
@@ -9,6 +8,7 @@ const { createInterface } = require('readline')
 const { argv, exit } = require('process')
 const getUrls = require('get-urls')
 const req = require('request')
+const isValid = require('./isValid')
 require('events').EventEmitter.defaultMaxListeners = 11
 req.maxRedirects = 11
 
@@ -130,55 +130,10 @@ const generateLinkList = (fileContents) => {
 
 const validateLinks = async (links) => {
     for (const link of links) {
-        await isValid(link)
+        if (options.b) await isValid(link, 'b')
+        if (options.g) await isValid(link, 'g')
+        else await isValid(link)
     }
     console.log('=========================')
     console.log('Exiting with exit code: ' + process.exitCode)
-}
-
-const isValid = (link) => {
-    return new Promise((resolve) => {
-        req.head(
-            link,
-            {
-                timeout: 1500,
-            },
-            function (_, res) {
-                if (!res) {
-                    if (!options.b && !options.g) {
-                        console.log(chalk.gray(`[TIMEOUT] ${link}`))
-                        process.exitCode = 2
-                    }
-                    return resolve()
-                }
-
-                const status = res.statusCode
-
-                displayStatusCode(status, link)
-
-                resolve()
-            },
-        )
-    })
-}
-
-const displayStatusCode = (code, link) => {
-    if (code === 200) {
-        if (!options.b) {
-            console.log(chalk.green(`[200] GOOD ${link}`))
-            if (process.exitCode != 1 && process.exitCode != 2) {
-                process.exitCode = 0
-            }
-        }
-    } else if (code === 400 || code === 404) {
-        if (!options.g) {
-            console.log(chalk.red(`[${code}] BAD ${link}`))
-            if (process.exitCode != 2) process.exitCode = 1
-        }
-    } else {
-        if (!options.b && !options.g) {
-            console.log(chalk.gray(`[${code}] UNKNOWN ${link}`))
-            process.exitCode = 2
-        }
-    }
 }
