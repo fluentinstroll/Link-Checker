@@ -1,7 +1,7 @@
 const isValid = require('./isValid')
 const getUrls = require('get-urls')
 
-const generateLinkList = (fileContents, ignore = false, iFileArr) => {
+const generateLinkList = (fileContents, iFileArr, ignore = false) => {
     let list
     if (ignore) {
         list = getUrls(fileContents.toString(), {

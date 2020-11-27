@@ -8,7 +8,7 @@ describe('test generateLinkList function', () => {
         let list = ['http://www.youtube.com', 'http://www.paypal.com']
         let ignore = ['http://www.paypal.com']
         let result = Array.from(
-            manageLinkList.generateLinkList(list, true, ignore),
+            manageLinkList.generateLinkList(list, ignore, true),
         )
 
         expect(result).toEqual(expected)
@@ -16,8 +16,9 @@ describe('test generateLinkList function', () => {
 
     test('should return with youtube.com and paypal.com', () => {
         let expected = ['http://www.youtube.com', 'http://www.paypal.com']
+        let ignore = ['http://www.youtube.com', 'http://www.paypal.com']
         let result = Array.from(
-            manageLinkList.generateLinkList(expected, false),
+            manageLinkList.generateLinkList(expected, ignore),
         )
 
         expect(result).toEqual(expected)
