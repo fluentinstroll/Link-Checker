@@ -6,9 +6,9 @@ const { once } = require('events')
 const { createReadStream } = require('fs')
 const { createInterface } = require('readline')
 const { argv, exit } = require('process')
-const getUrls = require('get-urls')
 const req = require('request')
-const isValid = require('./isValid')
+const manageLinkList = require('./manageLinkList')
+
 require('events').EventEmitter.defaultMaxListeners = 11
 req.maxRedirects = 11
 
@@ -101,39 +101,20 @@ if (options.t) {
 } else {
     filename = `${argv[2]}`
 }
+
 fs.readFile(filename, (err, fileContents) => {
     try {
-        var linkList = generateLinkList(fileContents) // Changed let to var because otherwise linklist variable would become undefined outside the try block -Joy3van
+        var linkList = manageLinkList.generateLinkList(
+            fileContents,
+            options.i,
+            iFileArr,
+        ) // Changed let to var because otherwise linklist variable would become undefined outside the try block -Joy3van
         linkList = Array.from(linkList)
     } catch (err) {
         console.log('The app has recieved a wrong filename.')
         console.log('Please enter a correct filename.')
+        console.log(err)
         exit(1)
     }
-    validateLinks(linkList)
+    manageLinkList.validateLinks(linkList)
 })
-
-const generateLinkList = (fileContents) => {
-    let list
-    if (options.i) {
-        list = getUrls(fileContents.toString(), {
-            stripWWW: false,
-            exclude: iFileArr,
-        }) // Set exclude option and exclude whatever link had been put in iFileArr. - Joy3van
-    } else {
-        list = getUrls(fileContents.toString(), {
-            stripWWW: false,
-        }) // Set the stripWWW option to false so it would get correct links(default is true) -Joy3van
-    }
-    return list
-}
-
-const validateLinks = async (links) => {
-    for (const link of links) {
-        if (options.b) await isValid(link, 'b')
-        if (options.g) await isValid(link, 'g')
-        else await isValid(link)
-    }
-    console.log('=========================')
-    console.log('Exiting with exit code: ' + process.exitCode)
-}
