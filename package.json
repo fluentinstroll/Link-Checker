@@ -1,7 +1,7 @@
 {
-  "name": "link-checker",
-  "version": "0.2.0",
-  "description": "",
+  "name": "l-checker",
+  "version": "1.0.0",
+  "description": "Check good and bad links in text files!",
   "main": "bin/index.js",
   "scripts": {
     "test": "jest --detectOpenHandles --coverage",
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/fluentinstroll/Link-Checker.git"
   },
-  "author": "Raymond Rambo",
+  "author": "Raymond Rambo <raymond_rambo@hotmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fluentinstroll/Link-Checker/issues"
@@ -26,6 +26,7 @@
     "get-urls": "^10.0.0",
     "index.js": "0.0.3",
     "istanbul": "^0.4.5",
+    "link-checker": "^1.4.1",
     "linkchecker": "^1.1.0",
     "node-fetch": "^2.6.1",
     "yargs": "^13.3.2"
