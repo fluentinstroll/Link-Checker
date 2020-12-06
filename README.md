@@ -20,15 +20,13 @@
 -   npm
 -   a text file that you would like to test the links within
 
-### In terminal:
+### Windows:
+- `npx l-checker <path-to-file>`
+
+### Linux:
 
 -   install Link Checker: `npm install l-checker`
 -   run the app: `linkchecker <path-to-file>`
-
-### or...
-
--   navigate to the src folder: `cd Link-Checker/src`
--   `node index.js <path-to-file>`
 
 ### To ignore links in a file
 
